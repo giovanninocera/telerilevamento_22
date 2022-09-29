@@ -41,5 +41,8 @@ plot(l2011[[1]], col=cl) # per elemento
 clb <- colorRampPalette(c("dark blue", "blue", "light blue")) (100)
 plot(l2011[[1]], col=clb)
 
-
+# Esporto l'immagine e la salvo nella cartella della working directory
+pdf("banda1.pdf") # l'argomento rappresenta il nome del file nella cartella
+plot(l2011[[1]], col=clb)
+dev.off() # per chiudere il terminale grafico
 
