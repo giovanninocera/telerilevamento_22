@@ -62,13 +62,13 @@ dev.off()
 
 # Export multiframe
 pdf("multiframeBG.pdf")
-par(mfrow=c(1,2)) # multiframe
+par(mfrow=c(1,2)) # (rows, columns)
 plot(l2011$B1_sre, col=clb)
 plot(l2011$B2_sre, col=clg)
 dev.off()
 
 # Reverting the multiframe
-par(mfrow=c(2,1)) # multiframe
+par(mfrow=c(2,1))
 plot(l2011$B1_sre, col=clb)
 plot(l2011$B2_sre, col=clg)
 dev.off()
@@ -80,10 +80,46 @@ plot(l2011$B1_sre, col=clb)
 # green
 plot(l2011$B2_sre, col=clg)
 # red
-clr <- colorRampPalette(c("dark red", "red", "light pink"))
+clr <- colorRampPalette(c("dark red", "red", "light pink")) (100)
 plot(l2011$B3_sre, col=clr)
 # NIR
-cln <- colorRampPalette(c("dark red", "orange", "yellow"))
+cln <- colorRampPalette(c("dark red", "orange", "yellow")) (100)
 plot(l2011$B4_sre, col=cln)
 
+# Plotting using RGB combination - natural colors
+plotRGB(l2011, r=3, g=2, b=1, stretch="lin")
+# Using false colors - NIR in red
+plotRGB(l2011, r=4, g=3, b=2, stretch="lin")
+# NIR in green
+plotRGB(l2011, r=3, g=4, b=2, stretch="lin")
+# NIR in blue
+plotRGB(l2011, r=3, g=2, b=4, stretch="lin") # in giallo il suolo nudo
 
+dev.off()
+
+# different stretching - "hist" - increase color range for average values
+plotRGB(l2011, r=3, g=4, b=2, stretch="hist")
+
+
+# Comparison
+par(mfrow=c(1,2))
+plotRGB(l2011, r=3, g=4, b=2, stretch="lin")
+plotRGB(l2011, r=3, g=4, b=2, stretch="hist")
+dev.off()
+
+par(mfrow=c(2,1))
+plotRGB(l2011, r=3, g=2, b=1, stretch="lin")
+plotRGB(l2011, r=3, g=4, b=2, stretch="hist")
+
+
+# Import another raster file to make a time series analysis
+# same area 23 year before
+l1988<- brick("p224r63_1988.grd")
+l1988
+
+# Time series analysis in natural (left) and false colors
+par(mfrow=c(2,2))
+plotRGB(l1988, r=3, g=2, b=1, stretch="lin")
+plotRGB(l1988, r=3, g=4, b=2, stretch="hist")
+plotRGB(l2011, r=3, g=2, b=1, stretch="lin")
+plotRGB(l2011, r=3, g=4, b=2, stretch="hist")
