@@ -1,48 +1,89 @@
-# Questo è il primo script di telerilevamento 22/23
+# This is the first remote sensing Rscript (22/23)
 
 
-# Settaggio cartella di lavoro
+# Setting the working directory
 setwd("C:/lab/")
 
-# Installo il pacchetto "raster" attraverso la funzione install.packages()
+# I want to use "raster" package
 # install.packages("raster")
 
-# Richiamo la libreria per utilizzare le funzioni del pacchetto raster
+# Recalling the library in order to use raster package funtions 
 library(raster)
 
-# Importo un file raster in formato RasterBrick e lo assegno ad un oggetto
-## brick() si utilizza per caricare interi pacchetti di dati (es. remoteS)
+# Importing raster file as RasterBrick
+## brick() is used to import entire packages of data (ex. remoteS)
 l2011 <- brick("p224r63_2011.grd")
-l2011 # osservo le caratteristiche dell'oggetto
-# Indici di riflettanza per 7 bande spettrali (Landsat) ## Nord del Brasile
+l2011 # observing the object
+# Reflectance index for 7 spectral bands (Landsat) ## Norteast Brazil
 # b1 = blue
 # b2 = green
 # b3 = red
 # b4 = NIR near infrared
-# b5 = infrarosso medio
-# b6 = infrarosso termico
-# b7 = infrarosso medio
+# b5 = middle infrared
+# b6 = thermic infrared
+# b7 = middle infrared
 
-# Plotto l'oggetto
-plot(l2011) # scala cromatica poco efficace ai fini dell'analisi
+# Plotting the object
+plot(l2011) # default colors make images unclear
 
-# Utilizzo la funzione colorRampPalette() per creare una scala cromatica (vettore)
-cl <- colorRampPalette(c("black", "grey", "light grey")) (100)
+# Creating a new chromatic scale (color's vector) using colorRampPalette()
+cl <- colorRampPalette(c("black", "grey", "light grey")) (100) 
 
-# Colori con tonalità più scure indicano valori bassi di riflettanza e viceversa
+# Darker colors indicate low values of refletance and vice versa
 plot(l2011, col=cl)
 
-# Osservo solamente la banda del blu - B1_sre
-plot(l2011$B1_sre, col=cl) # per nome
+# Observing just the blue band - B1_sre
+plot(l2011$B1_sre, col=cl) # name
 # or
-plot(l2011[[1]], col=cl) # per elemento
+plot(l2011[[1]], col=cl) # element
 
-# Creo una scala cromatica per la banda del blu
+# Creating a chromatic scale for the blue band
 clb <- colorRampPalette(c("dark blue", "blue", "light blue")) (100)
-plot(l2011[[1]], col=clb)
+plot(l2011$B1_sre, col=clb)
 
-# Esporto l'immagine e la salvo nella cartella della working directory
-pdf("banda1.pdf") # l'argomento rappresenta il nome del file nella cartella
-plot(l2011[[1]], col=clb)
-dev.off() # per chiudere il terminale grafico
+# Exporting the image to the folder of the working directory
+pdf("band1.pdf") # name of the new file in the WD folder
+plot(l2011$B1_sre, col=clb)
+dev.off() # to close graphic terminal
+# or
+png("band1.png")
+plot(l2011$B1_sre, col=clb)
+dev.off()
+
+# Observing the green band - B2_sre - with green tonalities
+clg <- colorRampPalette(c("dark green", "green", "light green")) (100)
+plot(l2011$B2_sre, col=clg)
+
+# Changing graphical parameteres to plot 2 images one next to the other
+par(mfrow=c(1,2)) # multiframe
+plot(l2011$B1_sre, col=clb)
+plot(l2011$B2_sre, col=clg)
+dev.off()
+
+# Export multiframe
+pdf("multiframeBG.pdf")
+par(mfrow=c(1,2)) # multiframe
+plot(l2011$B1_sre, col=clb)
+plot(l2011$B2_sre, col=clg)
+dev.off()
+
+# Reverting the multiframe
+par(mfrow=c(2,1)) # multiframe
+plot(l2011$B1_sre, col=clb)
+plot(l2011$B2_sre, col=clg)
+dev.off()
+
+# Multiframe 2x2
+par(mfrow=c(2,2))
+# blue
+plot(l2011$B1_sre, col=clb)
+# green
+plot(l2011$B2_sre, col=clg)
+# red
+clr <- colorRampPalette(c("dark red", "red", "light pink"))
+plot(l2011$B3_sre, col=clr)
+# NIR
+cln <- colorRampPalette(c("dark red", "orange", "yellow"))
+plot(l2011$B4_sre, col=cln)
+
 
