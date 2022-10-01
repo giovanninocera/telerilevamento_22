@@ -27,24 +27,24 @@ plot(lst2015, col=cl)
 
 dev.off()
 
-
-
 # Import the whole set altoghether
 rlist <- list.files(pattern="lst")
+rlist
+import <- lapply(rlist, raster) # raster function to a list of files
+import
+
+tgr <- stack(import) # combining different layers in a RasterStack
+tgr
+
+plot(tgr, col=cl) # observing the stack
+plot(tgr[[1]], col=cl) # observing the first layer
+
+
+plotRGB(tgr, r=1, g=2, b=3, stretch="lin") # time serie with plotRGB
+
 
 dev.off()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+### Time series analysis of atmospheric N0s concentration during covid lockdown
