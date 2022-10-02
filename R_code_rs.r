@@ -98,18 +98,18 @@ plotRGB(l2011, r=3, g=2, b=4, stretch="lin") # in giallo il suolo nudo
 dev.off()
 
 # different stretching - "hist" - increase color range for average values
-plotRGB(l2011, r=3, g=4, b=2, stretch="hist")
+plotRGB(l2011, 3, 4, 2, st="hist")
 
 
 # Comparison
 par(mfrow=c(1,2))
-plotRGB(l2011, r=3, g=4, b=2, stretch="lin")
-plotRGB(l2011, r=3, g=4, b=2, stretch="hist")
+plotRGB(l2011, 3, 4, 2, st="lin")
+plotRGB(l2011, 3, 4, 2, st="hist")
 dev.off()
 
 par(mfrow=c(2,1))
-plotRGB(l2011, r=3, g=2, b=1, stretch="lin")
-plotRGB(l2011, r=3, g=4, b=2, stretch="hist")
+plotRGB(l2011, 3, 2, 1, st="lin")
+plotRGB(l2011, 3, 4, 2, st="hist")
 
 
 # Import another raster file to make a time series analysis
@@ -119,7 +119,7 @@ l1988
 
 # Time series analysis in natural (left) and false colors
 par(mfrow=c(2,2))
-plotRGB(l1988, r=3, g=2, b=1, stretch="lin")
-plotRGB(l1988, r=3, g=4, b=2, stretch="hist")
-plotRGB(l2011, r=3, g=2, b=1, stretch="lin")
-plotRGB(l2011, r=3, g=4, b=2, stretch="hist")
+plotRGB(l1988, 3, 2, 1, st="lin")
+plotRGB(l1988, 3, 4, 2, st="hist")
+plotRGB(l2011, 3, 2, 1, st="lin")
+plotRGB(l2011, 3, 4, 2, st="hist")
