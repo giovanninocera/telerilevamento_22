@@ -14,7 +14,6 @@ sent <- brick("similaun.png")
 # band 1: NIR
 # band 2: red
 # band 3: green
-# band 4: blue
 
 # Plotting using ggRGB - false colours
 ggRGB(sent, 1, 2, 3, str="lin") # stretching is not mandatory
