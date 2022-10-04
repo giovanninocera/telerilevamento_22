@@ -1,11 +1,9 @@
-# Spatial variability Similaun glacier
+# Spatial variability Similaun glacier - 2
 library(raster)
 library(RStoolbox) # for image viewing and variability
 library(ggplot2) # for ggplot plotting
 library(patchwork)
-# install.packages("gridExtra")
 library(gridExtra) # for plotting ggplots together
-# install.packages("viridis")
 library(viridis) # for ggplots colouring
 
 setwd("C:/lab/")
@@ -14,85 +12,88 @@ sent <- brick("similaun.png")
 # band 1: NIR
 # band 2: red
 # band 3: green
-# band 4: blue
 
-# Plotting using ggRGB - false colours
-ggRGB(sent, 1, 2, 3, str="lin") # stretching is not mandatory
-p1 <- ggRGB(sent, 1, 2, 3)
-p2 <- ggRGB(sent, 2, 1, 3)
-
-p1 + p2 # one beside the other using patchwork
+# Plotting using ggRGB - false colours - nir in green component
+ggRGB(sent, 2, 1, 3)
 
 
-# NDVI calculation
-nir <- sent$similaun_1
-red <- sent$similaun_2
-# also: red <- sent[[2]]
+## Multivariate analysis
+sen_pca <- rasterPCA(sent)
+sen_pca
 
-ndvi <- (nir-red) / (nir+red)
-plot(ndvi)
+# Principal Components
+pc1 <- sen_pca$map$PC1
+pc2 <- sen_pca$map$PC2
+pc3 <- sen_pca$map$PC3
 
-cl <- colorRampPalette(c("black", "white", "red",
-                         "magenta", "green"))(100)
-plot(ndvi, col=cl)
+# Observing Principal Components
+summary(sen_pca$model)
 
-
-## Calculation of variability through a moving window using focal()
-
-# over NIR
-
-# mean
-nirmn3 <- focal(nir, w=matrix(1/9, nrow=3, ncol=3), fun=mean)
-plot(nirmn3, col=cl)
-
-# standard deviation
-nirsd3 <- focal(nir, matrix(1/9, 3, 3), sd)
-clsd <- colorRampPalette(c("blue", "green", "pink", "magenta",
-                           "orange", "brown", "red", "yellow"))(100)
-plot(nirsd3, col=clsd)
+# Simple plot
+plot(sen_pca$map)
 
 
-# Plotting using ggplot2 and viridis
+# Plotting principal components using ggplot2
+gpc1 <- ggplot() +
+  geom_raster(pc1, mapping=aes(x, y, fill=PC1))
+
+gpc2 <- ggplot() +
+  geom_raster(pc2, mapping=aes(x, y, fill=PC2))
+
+gpc3 <- ggplot() +
+  geom_raster(pc3, mapping=aes(x, y, fill=PC3))
+
+# multiframe using patchwork
+gpc1 + gpc2 + gpc3
+
+
+## Standard deviation of PC1 using focal() - 3x3 moving window
+pc1sd3 <- focal(pc1, matrix(1/9, 3, 3), sd)
+pc1sd3
+
+# Plotting the standard deviation of PC1 with ggplot2 and viridis
 ggplot() + 
-  geom_raster(nirsd3, mapping=aes(x=x, y=y, fill=layer))
-# with viridis
+  geom_raster(pc1sd3, mapping=aes(x, y, fill=layer)) +
+  scale_fill_viridis()
+
+# magma color scale + title
 ggplot() + 
-  geom_raster(nirsd3, mapping=aes(x, y, fill=layer)) +
-  scale_fill_viridis() +
-  ggtitle("Standard deviation of nir - viridis")
-# with cividis
-ggplot() + 
-  geom_raster(nirsd3, mapping=aes(x, y, fill=layer)) +
-  scale_fill_viridis(option="cividis") +
-  ggtitle("Standard deviation of nir - cividis")
-# with magma
-mag3 <- ggplot() + 
-  geom_raster(nirsd3, mapping=aes(x, y, fill=layer)) +
-  scale_fill_viridis(option="magma") +
-  ggtitle("Standard deviation of nir - 3x3 - magma")
+  geom_raster(pc1sd3, mapping=aes(x, y, fill=layer)) +
+  scale_fill_viridis(option = "magma") +
+  ggtitle("PC1 standard deviation in 'magma' chromatic scale")
 
 
-# Making calculation in a 7x7 window
-nirsd7 <- focal(nir, matrix(1/49, 7, 7), sd)
-plot(nirsd7, col=clsd)
+# Images altogether
+im1 <- ggRGB(sent, 2, 1, 3) # original - nir in the green component
+im2 <- ggplot() +
+  geom_raster(pc1, mapping=aes(x, y, fill=PC1)) # PC1 layer
+im3 <- ggplot() + 
+  geom_raster(pc1sd3, mapping=aes(x, y, fill=layer)) +
+  scale_fill_viridis(option = "magma") # PC1 standard deviation 3x3 W
 
-# Plotting with ggplot2 using viridis (magma)
-mag7 <- ggplot() + 
-  geom_raster(nirsd7, mapping=aes(x, y, fill=layer)) +
-  scale_fill_viridis(option="magma") +
-  ggtitle("Standard deviation of nir - 7x7 - magma")
+im1 + im2 + im3 # patchwork
+
+# Calculating heterogeneity in 5x5 and 7x7 windows
+pc1sd5 <- focal(pc1, matrix(1/25, 5, 5), sd)
+pc1sd5
+im5 <- ggplot() + 
+  geom_raster(pc1sd5, mapping=aes(x, y, fill=layer)) +
+  scale_fill_viridis(option = "magma") # PC1 standard deviation 5x5 W
+
+pc1sd7 <- focal(pc1, matrix(1/49, 7, 7), sd)
+pc1sd7
+im7 <- ggplot() + 
+  geom_raster(pc1sd7, mapping=aes(x, y, fill=layer)) +
+  scale_fill_viridis(option = "magma") # PC1 standard deviation 7x7 W
+
+im3 + im5 + im7
+# Wider the windows higher the variability - lower the detail
+# im3 (3x3) shows more details
+# im5 (5x5) shows higher variability
+# im7 (7x7) shows the highest variability but less details
 
 
-# Comparing outputs with different window's size
-mag3 / mag7 # one on top of the other
 
 
 
 
-
-
-
-
-# NDVI sd in a wider moving focal window
-ndvisd9 <- focal(ndvi, matrix(1/9, 3, 3), sd)
-plot(ndvisd9, col=clsd)
