@@ -49,6 +49,15 @@ ggplot() +
   ggtitle("CHM difference between 2004-2013 in San Genesio/Jenesien")
 
 
-# Visualize the point cloud
-p_cloud <- readLAS("point_cloud.laz") # using lidR library
+# Save the rasters
+writeRaster(chm_13r,"chm_2013_resampled_San_genesio.tif")
+writeRaster(diff_chm,"difference_chm_San_genesio.tif")
+
+
+
+
+# Visualize the point cloud - 3D model
+p_cloud <- readLAS("point_cloud.laz")
 plot(p_cloud)
+
+
